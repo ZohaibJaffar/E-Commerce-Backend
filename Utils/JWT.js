@@ -1,8 +1,12 @@
 const jwt = require("jsonwebtoken")
 private_key = process.env.PRIVATE_KEY
 
-async function setUser(payload){
-    const token = jwt.sign(payload,private_key,{expiresIn : "1h"})
+async function setUser(data){
+    const payload = {
+        userName : data.userName,
+        role : data.role
+    }
+    const token = await jwt.sign(payload,private_key,{expiresIn : "1h"})
     return token
 }
 async function getUser(token) {
@@ -13,6 +17,7 @@ async function getUser(token) {
         
     } catch (error) {
        console.log(`There is error while verifying the token ${error}`)
+       return null
     }
     
 } 

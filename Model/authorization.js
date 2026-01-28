@@ -38,7 +38,7 @@ userSchema.static('matchPasswordAndGenerateToken',async function(email,password)
     if (!user) return null;
     const checkpass = await bcrypt.compare(password, user.password)
     if(!checkpass) throw new Error ("Incorrect Password")
-    const token = setUser(user)
+    const token = await setUser(user)
     return token
     // if (!user) return null;
     // const salt = user.salt
@@ -52,7 +52,7 @@ userSchema.static('matchPasswordAndGenerateToken',async function(email,password)
 })
 
 
-const authUser = model("User",userSchema)
+const authUser = model("authUser",userSchema)
 
 module.exports = authUser
 
