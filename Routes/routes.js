@@ -20,8 +20,8 @@ routes.get("/",(req,res)=>{
 routes.get("/login",handleGetLogin)
 routes.post('/login',handlePostLoginRoutes)
 //registration
-routes.get("/signup",handleGetResgistration)
-routes.post("/signup",handlePostRegistration)
+routes.get("/signup",authen,handleGetResgistration)
+routes.post("/signup",authen,handlePostRegistration)
 
 
 
