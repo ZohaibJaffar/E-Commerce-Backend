@@ -12,7 +12,7 @@ function authen(req,res,next){
     if(!token) res.json({message : "Failed", data :"Invalid email or  password"})
     const payload = getUser(token)
     if(!payload) res.json({message : "Failed", data : "Unauthentic User"})
-    req.body = payload
+        req.user = payload
     next()
 
 }

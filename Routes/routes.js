@@ -4,9 +4,12 @@ const routes = express.Router()
 const {handlePostLoginRoutes,
     handlePostRegistration,
     handleGetLogin,
-    handleGetResgistration
+    handleGetResgistration,
+    handleUser,
+    handleAllAuth
 }= require("../Controllers/authentication.js")
 const authen = require("../Middleware/auth.js")
+const RoleBase = require("../Middleware/role.js")
 
 
 //++++++++++++++++++++++++++++++++++++User Routes+++++++++++++++++++++++++++++++++++
@@ -15,13 +18,16 @@ routes.get("/",(req,res)=>{
 })
 
 
-//++++++++++++++++++++++++++++++++++++login and registration routes ++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++ Authorization & authentication Routes ++++++++++++++++++++++++++++++++++++
 //login routes
-routes.get("/login",handleGetLogin)
-routes.post('/login',handlePostLoginRoutes)
+routes.get("/admin/login",handleGetLogin)
+routes.post('/admin/login',handlePostLoginRoutes)
 //registration
-routes.get("/signup",authen,handleGetResgistration)
-routes.post("/signup",authen,handlePostRegistration)
+routes.get("/admin/signup",authen,RoleBase("Admin"),handleGetResgistration)
+routes.post("/admin/signup",authen,RoleBase("Admin"),handlePostRegistration)
+routes.get("/admin/allUser",authen,RoleBase("Admin"),handleAllAuth)
+routes.get("/admin/allUser/:name",authen,handleUser)
+//++++++++++++++++++++++++++++++++
 
 
 
