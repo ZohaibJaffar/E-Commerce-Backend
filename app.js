@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config({paht : "./.env"})
 const express = require('express')
 const routes = require("./Routes/routes.js")
 const DBconnection = require("./Config/DBconnection.js")

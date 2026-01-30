@@ -5,17 +5,17 @@ const {Schema,model} = require("mongoose")
 const userSchema = Schema({
     userName :{
         type : String,
-        required : true
+        required : [true,"Name is needed"]
 
     },
     email :{
         type : String,
-        required : true,
-        unique : true
+        required : [true, "Email is needed"],
+        unique : [true,"Email is already exist"]
     },
     password:{
         type : String,
-        required : true
+        required : [true,"Password is required"]
     },
     role :{
         type : String,
@@ -23,7 +23,7 @@ const userSchema = Schema({
         default : "User"
     }
 
-    })
+    },{timestamps : true })
 userSchema.pre("save",async function (next){
         const user = this
         if(!user.isModified("password")) return null;
@@ -35,9 +35,9 @@ userSchema.pre("save",async function (next){
        })
 userSchema.static('matchPasswordAndGenerateToken',async function(email,password){
     const user = await this.findOne({email})
-    if (!user) return null;
+    if (!user){ throw new Error("Invalid email");}
     const checkpass = await bcrypt.compare(password, user.password)
-    if(!checkpass) throw new Error ("Incorrect Password")
+    if(!checkpass) {throw new Error ("Incorrect Password")}
     const token = await setUser(user)
     return token
     // if (!user) return null;

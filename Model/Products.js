@@ -25,6 +25,15 @@ const userSchema = new Schema({
         required : true,
         min : 1
     },
+    review : [
+        {
+            type : String,
+            givenBy :{
+                type : mongoose.Schema.Type.ObjectId,
+                ref : "User"
+            }
+        }
+    ]
 },{timestamps : true })
 
 

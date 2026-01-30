@@ -5,14 +5,14 @@ function authen(req,res,next){
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ 
             message: "Failed", 
-            data: "No token provided or invalid format" 
+            data: "Unauthorize User" 
         });
     }
     const token = authHeader.split(' ')[1]
-    if(!token) res.json({message : "Failed", data :"Invalid email or  password"})
+    if(!token) res.status(401).json({message : "Failed", data :"Unauthorize User"})
     const payload = getUser(token)
-    if(!payload) res.json({message : "Failed", data : "Unauthentic User"})
-        req.user = payload
+    if(!payload) res.status(401).json({status: "Failed", message : "Unauthorize User"})
+    req.user = payload
     next()
 
 }

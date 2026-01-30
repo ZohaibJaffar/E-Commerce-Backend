@@ -1,47 +1,84 @@
 const authUser = require("../Model/authorization.js")
 
 async function handlePostLoginRoutes(req,res) {
-    const {email, password} = req.body
-    const token = await authUser.matchPasswordAndGenerateToken(email,password)
-    if(!token){
-        res.json({message : "Fail", data:{token : token}})
+    try {
+        const {email, password} = req.body
+        const token = await authUser.matchPasswordAndGenerateToken(email,password)
+        res.status(200).json(
+            {status : 'Success',
+                data : { token : token}
+            })
+        
+    } catch (error) {
+        res.status(400).json({
+            status : "Failed",
+            message : error.message
+        })
     }
-    res.status(200).json({message : 'Success',data : { token : token}})
 }
 
 async function handlePostRegistration(req,res) {
-    const user = req.body
-    console.log(user)
-    const {userName , email, password, role}  = req.body
-    const newUser = await authUser.create({
-        userName,
-        email,
-        password,
-        role
-    })
+    try {
+        const user = req.body
+        const {userName , email, password, role}  = req.body
+        const newUser = await authUser.create({
+            userName,
+            email,
+            password,
+            role
+        })
+        const userEmail = newUser.email
+        const userRole = newUser.role
+        res.status(201).json({message : 'Success ', data :{userEmail,userRole}})
+    
+    } catch (error) {
+        res.status(400).json({
+            status : "Failed",
+            message : error.message
+        })
+    }
 
-    res.status(201).json({message : 'Success ', data :{email,role}})
 }
-
 
 function handleGetLogin(req,res){
-    res.json({message : "Success", date  : "Wellcome in login page"})
-}
-
-
+    try {
+        res.json({message : "Success", date  : "Wellcome in login page"})
+    }
+     catch (error) {
+        res.status(500).json({
+            status : "Failed",
+            message : error.message
+        })  
+    }}
 function handleGetResgistration(req,res){
     res.json({message : "Success", date  : "Wellcome in Sign up page"})
 }
 
 async function handleAllAuth(req,res){
-    const allUsers = await authUser.find({})
-    res.status(200).json({message : "Success",data :allUsers})
+    try {
+        const allUsers = await authUser.find({})
+        res.status(200).json({message : "Success",data :allUsers})
+        
+    } catch (error) {
+        res.json({
+            status : "Failed",
+            message : error.message
+        })
+    }
 }
 
 async function handleUser (req,res){
-    const {name} = req.params
-    const user = await authUser({fullName : name})
-    res.status(200).json({message :"Success",data : user})
+    try {
+        const {name} = req.params
+        const user = await authUser({fullName : name})
+        res.status(200).json({message :"Success",data : user})
+        
+    } catch (error) {
+        res.json({
+            status : "Failed",
+            message : error.message
+        })
+    }
 
 }
 
