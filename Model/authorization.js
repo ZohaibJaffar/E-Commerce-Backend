@@ -17,6 +17,10 @@ const userSchema = Schema({
         type : String,
         required : [true,"Password is required"]
     },
+    shortUrl: {
+        type : String,
+        required : [true , " Need Url "]
+    },
     role :{
         type : String,
         enum : ["Admin","User","Manager"],

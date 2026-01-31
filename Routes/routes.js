@@ -8,26 +8,35 @@ const {handlePostLoginRoutes,
     handleUser,
     handleAllAuth
 }= require("../Controllers/authentication.js")
+const  {GetAllProduct,
+    PostNewProduct,
+    GetNewProduct 
+    
+} = require("../Controllers/Products.js")
 const authen = require("../Middleware/auth.js")
 const RoleBase = require("../Middleware/role.js")
 
 
 //++++++++++++++++++++++++++++++++++++User Routes+++++++++++++++++++++++++++++++++++
-routes.get("/",(req,res)=>{
-    res.status(200).json({message : "succeed", data : "Wellcome in our home page "})
-})
 
 
 //++++++++++++++++++++++++++++++++++++ Authorization & authentication Routes ++++++++++++++++++++++++++++++++++++
+routes.get("/admin/",(req,res)=>{
+    res.status(200).json({message : "succeed", data : "Wellcome in our home page "})
+})
+
 //login routes
 routes.get("/admin/login",handleGetLogin)
 routes.post('/admin/login',handlePostLoginRoutes)
 //registration
 routes.get("/admin/signup",authen,RoleBase("Admin"),handleGetResgistration)
 routes.post("/admin/signup",authen,RoleBase("Admin"),handlePostRegistration)
-routes.get("/admin/allUser",authen,RoleBase("Admin"),handleAllAuth)
-routes.get("/admin/allUser/:name",authen,handleUser)
-//++++++++++++++++++++++++++++++++
+routes.get("/admin/alluser",authen,RoleBase("Admin"),handleAllAuth)
+routes.get("/admin/alluser/:name",authen,handleUser)
+//++++++++++++++++++++++++++++++++Products Routes +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+routes.get('/',GetAllProduct)
+routes.post('/product',PostNewProduct)
+routes.get("/product",GetNewProduct )
 
 
 

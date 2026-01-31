@@ -27,9 +27,17 @@ const userSchema = new Schema({
     },
     review : [
         {
-            type : String,
+            rating : {
+                type : Number,
+                min : 0,
+                max : 5
+            },
+            comment : {
+                type : String
+
+            },
             givenBy :{
-                type : mongoose.Schema.Type.ObjectId,
+                type : Schema.Types.ObjectId,
                 ref : "User"
             }
         }
@@ -37,7 +45,7 @@ const userSchema = new Schema({
 },{timestamps : true })
 
 
-const Product = ("Product",userSchema)
+const Product = model("Product",userSchema)
 
 module.exports = Product
 

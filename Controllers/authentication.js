@@ -20,11 +20,12 @@ async function handlePostLoginRoutes(req,res) {
 async function handlePostRegistration(req,res) {
     try {
         const user = req.body
-        const {userName , email, password, role}  = req.body
+        const {userName , email, password, shortUrl ,role}  = req.body
         const newUser = await authUser.create({
             userName,
             email,
             password,
+            shortUrl,
             role
         })
         const userEmail = newUser.email
@@ -69,8 +70,9 @@ async function handleAllAuth(req,res){
 
 async function handleUser (req,res){
     try {
-        const {name} = req.params
-        const user = await authUser({fullName : name})
+        console.log(req.params)
+        const url = req.params.name
+        const user = await authUser.findOne({shortUrl : url})
         res.status(200).json({message :"Success",data : user})
         
     } catch (error) {
