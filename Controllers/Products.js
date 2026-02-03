@@ -1,3 +1,4 @@
+const Category = require('../Model/category.js');
 const Product = require("../Model/Products.js")
 
 async function GetAllProduct(req,res){
@@ -15,6 +16,7 @@ async function GetAllProduct(req,res){
     }
 }
 async function PostNewProduct(req,res){
+    
     const {title,
             description,
             category,
@@ -41,4 +43,28 @@ async function GetNewProduct(req,res){
 }
 
 
-module.exports = {GetAllProduct,PostNewProduct,GetNewProduct}
+async function PostHandleCategory(req,res){
+const {
+  name,
+  slug,
+  description,
+  parent,
+  isActive,
+  image
+}
+ = req.body
+    const newCategory = await Category.create({
+  name,
+  slug,
+  description,
+  parent,
+  isActive,
+  image
+})
+res.status(201).json({
+    status : "Success",
+    data : newCategory
+})
+}
+
+module.exports = {GetAllProduct,PostNewProduct,GetNewProduct,PostHandleCategory}

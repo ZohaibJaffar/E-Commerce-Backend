@@ -4,21 +4,31 @@ const {Schema, model} = require("mongoose")
 const userSchema = new Schema({
     title : {
         type : String,
-        required : true
+        required : [true, "Need a title for product"],
+        unique : [true,"The Product is already exists"]
     },
     description :{
         type : String,
         required : true
     },
-    category : {
+    slug : {
         type : String,
-        enum : ["Clothes","Books","Fragrance","Shoes","Furneture"]
+        required : true,
+        trim : true
+    },
+    images : [{
+        type : String,
+        required : true
+    }],
+    category : {
+        type : Schema.Types.ObjectId,
+        ref : 'Category'
 
     },
     price : {
         type : Number,
         required : true,
-        min : 0
+        min : {$gt : 0}
     },
     stock : {
         type : Number,

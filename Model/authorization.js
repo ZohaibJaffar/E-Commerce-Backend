@@ -5,21 +5,27 @@ const {Schema,model} = require("mongoose")
 const userSchema = Schema({
     userName :{
         type : String,
-        required : [true,"Name is needed"]
+        required : [true,"Name is needed"],
+        trim : true,
+
 
     },
     email :{
         type : String,
         required : [true, "Email is needed"],
-        unique : [true,"Email is already exist"]
+        unique : [true,"Email is already exist"],
+        trim : true
     },
     password:{
         type : String,
         required : [true,"Password is required"]
     },
-    shortUrl: {
+    slug: {
         type : String,
-        required : [true , " Need Url "]
+        required : true,
+        trim : true,
+        lowercase : true,
+        unique : [true, "This url has been reserved"]
     },
     role :{
         type : String,

@@ -20,12 +20,12 @@ async function handlePostLoginRoutes(req,res) {
 async function handlePostRegistration(req,res) {
     try {
         const user = req.body
-        const {userName , email, password, shortUrl ,role}  = req.body
+        const {userName , email, password, slug ,role}  = req.body
         const newUser = await authUser.create({
             userName,
             email,
             password,
-            shortUrl,
+            slug,
             role
         })
         const userEmail = newUser.email
@@ -70,9 +70,14 @@ async function handleAllAuth(req,res){
 
 async function handleUser (req,res){
     try {
-        console.log(req.params)
-        const url = req.params.name
-        const user = await authUser.findOne({shortUrl : url})
+        const {url} = req.params
+        const user = await authUser.findOne({slug : url}).select(["-password","-slug"])
+        if(!user){
+            res.status(404).json({
+                status : "Failed",
+                message : "404: Page not found"
+            })
+        }
         res.status(200).json({message :"Success",data : user})
         
     } catch (error) {
@@ -83,6 +88,39 @@ async function handleUser (req,res){
     }
 
 }
+async function patchHandleUser(req, res) {
+  try {
+    const { name } = req.params;
+    const updateData = req.body;
+
+    const user = await authUser.findOneAndUpdate(
+      { slug: name },
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      data: user,
+    });
+
+  } catch (error) {
+    res.status(404).json({
+      status: "Failed",
+      message: "Page not found",
+    });
+  }
+}
 
 
 module.exports = {handlePostLoginRoutes,
@@ -90,5 +128,6 @@ module.exports = {handlePostLoginRoutes,
     handleGetLogin,
     handleGetResgistration,
     handleAllAuth,
-    handleUser
+    handleUser,
+    patchHandleUser
 }
