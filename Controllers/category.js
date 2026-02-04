@@ -1,64 +1,5 @@
 const Category = require('../Model/category.js');
-const Product = require("../Model/Products.js")
 const slugify = require("slugify")
-async function GetAllProduct(req,res){
-    try {
-        const allProducts = await Product.find({}).populate("category","name -_id")
-        res.status(200).json({
-            status : 'success',
-            message : allProducts
-        })
-    } catch (error) {
-        res.status(500).json({
-            status : 'Failed',
-            message : error.message
-        })
-    }
-}
-async function PostNewProduct(req,res){
-    try {
-        const {title,
-                description,
-                category,
-                price,
-                stock,
-                review
-            } = req.body
-            const categoryObj = await Category.findOne({name : category})
-            console.log(categoryObj)
-            if(!categoryObj){
-                return res.status(400).json({
-                    status : "failed",
-                    message : "Category doesn't exist"
-                })
-            }
-        const newProduct = await Product.create({
-                title,
-                description,
-                slug : slugify(title),
-                category : categoryObj._id,
-                price,
-                stock,
-                review
-        }).populate("category")
-        const data = newProduct
-        res.status(201).json({status : "Success",message : data})
-        
-    } catch (error) {
-        res.status(400).json({
-            status : "Failed",
-            message : error.message
-        })
-    }
-    
-}
-async function GetNewProduct(req,res){
-    res.status(200).json({
-        status : "Success",
-        message : "You are in add product page"
-    })
-}
-
 
 async function PostHandleCategory(req,res){
     try {
@@ -186,11 +127,10 @@ async function DeleteHandleCategoryIndividual(req,res){
 }
 
 
-module.exports = {GetAllProduct,
-    PostNewProduct,
-    GetNewProduct,
+module.exports = {
     GetHandleCategory,
     PostHandleCategory,
      GetHandleCategoryIndividual,
      DeleteHandleCategoryIndividual,
-    PatchtHandleCategoryIndividual}
+    PatchtHandleCategoryIndividual,
+}

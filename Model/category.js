@@ -6,21 +6,16 @@ const categorySchema = new Schema(
       type: String,
       required: [true, "Category name is required"],
       trim: true,
-      unique: true,
+      unique: [true,"Category already exists"],
     },
 
     slug: {
       type: String,
       required: true,
-      unique: true,
+      unique: [true, "This URL has been reserved"],
       lowercase: true,
       trim: true,
     },
-
-    description: {
-      type: String,
-    },
-
     parent: {
       type: Schema.Types.ObjectId,
       ref: "Category",

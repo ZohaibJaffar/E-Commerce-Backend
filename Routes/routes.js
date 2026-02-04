@@ -8,11 +8,15 @@ const {handlePostLoginRoutes,
     handleUser,
     handleAllAuth
 }= require("../Controllers/authentication.js")
-const  {GetAllProduct,
-    PostNewProduct,
-    GetNewProduct,
+const {
+    GetHandleCategory,
     PostHandleCategory,
-    
+     GetHandleCategoryIndividual,
+     DeleteHandleCategoryIndividual,
+    PatchtHandleCategoryIndividual
+} = require('../Controllers/category.js')
+const  {GetAllProduct,
+    PostNewProduct
 } = require("../Controllers/Products.js")
 const authen = require("../Middleware/auth.js")
 const RoleBase = require("../Middleware/role.js")
@@ -37,17 +41,15 @@ routes.get("/admin/alluser",authen,RoleBase("Admin"),handleAllAuth)
 routes.get("/admin/alluser/:url",authen,handleUser)
 routes.patch("/admin/alluser/:url",authen,handleUser)
 //++++++++++++++++++++++++++++++++Products Routes +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-routes.get('/',GetAllProduct)
-routes.post('/product',authen,RoleBase("Admin","Manager"),PostNewProduct)
-routes.get("/product",GetNewProduct )
+routes.get('/products',GetAllProduct)
+routes.post('/products',PostNewProduct)
 //++++++++++++++++++++++++++++++++++++++++++++Category Routes+++++++++++++++++++++++++++++++++++++++++++++++++++
 routes.post("/category",PostHandleCategory)
-routes.get("/category",(req,res)=>{
-    res.status(200).json({
-        status : "Success",
-        message : "You are in Category page"
-    })
-})
+routes.get("/category",GetHandleCategory)
+
+routes.get("/category/:url", GetHandleCategoryIndividual)
+routes.delete("/category/:url", DeleteHandleCategoryIndividual)
+routes.patch("/category/:url",PatchtHandleCategoryIndividual)
 
 
 

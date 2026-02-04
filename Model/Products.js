@@ -9,30 +9,33 @@ const userSchema = new Schema({
     },
     description :{
         type : String,
-        required : true
+        required : [true,"Description is required"]
     },
     slug : {
         type : String,
         required : true,
-        trim : true
+        trim : true,
+        lowercase : true,
+        unique :[true , "This URL is not Availible"]
     },
     images : [{
         type : String,
-        required : true
+        required : [true,"Images are required"]
     }],
     category : {
         type : Schema.Types.ObjectId,
-        ref : 'Category'
+        ref : 'Category',
+        required : [true,"Category is required"]
 
     },
     price : {
         type : Number,
-        required : true,
-        min : {$gt : 0}
+        required : [true,"Price is required"],
+        min : 0
     },
     stock : {
         type : Number,
-        required : true,
+        required : [true,"Stock is required"],
         min : 1
     },
     review : [

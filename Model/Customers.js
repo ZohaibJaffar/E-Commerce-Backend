@@ -46,8 +46,6 @@ const customerSchema = new Schema({
       type: Number,
       default: 0,
     },
-
-    notes: String,
   },
   {
     timestamps: true,
