@@ -16,7 +16,10 @@ const {
     PatchtHandleCategoryIndividual
 } = require('../Controllers/category.js')
 const  {GetAllProduct,
-    PostNewProduct
+    PostNewProduct,
+    GetSingleProduct,
+    DeleteSingleProduct,
+    PatchSingleProduct
 } = require("../Controllers/Products.js")
 const authen = require("../Middleware/auth.js")
 const RoleBase = require("../Middleware/role.js")
@@ -43,10 +46,12 @@ routes.patch("/admin/alluser/:url",authen,handleUser)
 //++++++++++++++++++++++++++++++++Products Routes +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 routes.get('/products',GetAllProduct)
 routes.post('/products',PostNewProduct)
+routes.get('/products/:url',GetSingleProduct)
+routes.delete('/products/:url',DeleteSingleProduct)
+routes.patch('/products/:url',PatchSingleProduct)
 //++++++++++++++++++++++++++++++++++++++++++++Category Routes+++++++++++++++++++++++++++++++++++++++++++++++++++
 routes.post("/category",PostHandleCategory)
 routes.get("/category",GetHandleCategory)
-
 routes.get("/category/:url", GetHandleCategoryIndividual)
 routes.delete("/category/:url", DeleteHandleCategoryIndividual)
 routes.patch("/category/:url",PatchtHandleCategoryIndividual)

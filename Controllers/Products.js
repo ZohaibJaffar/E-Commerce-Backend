@@ -1,9 +1,16 @@
 const Category = require('../Model/category.js');
-const Product = require("../Model/Products.js")
 const slugify = require("slugify")
+const Product = require("../Model/Products.js")
 async function GetAllProduct(req,res){
     try {
         const allProducts = await Product.find({}).populate("category","name -_id")
+        .select(["-_id","-createdAt","-updatedAt","-__v"]).lean()
+        //this is use for assiging the name only to category
+        allProducts.forEach(product => {
+            if (product.category && product.category.name) {
+                product.category = product.category.name;
+            }
+        });
         res.status(200).json({
             status : 'success',
             message : allProducts
@@ -24,8 +31,7 @@ async function PostNewProduct(req,res){
                 stock,
                 review
             } = req.body
-            const categoryObj = await Category.findOne({name : category})
-            console.log(categoryObj)
+            const categoryObj = await Category.findOne({name : category}).select("_id")
             if(!categoryObj){
                 return res.status(400).json({
                     status : "failed",
@@ -36,13 +42,12 @@ async function PostNewProduct(req,res){
                 title,
                 description,
                 slug : slugify(title),
-                category : categoryObj._id,
+                category : categoryObj._id, // it is used for assigning ID to the category
                 price,
                 stock,
                 review
-        }).populate("category")
-        const data = newProduct
-        res.status(201).json({status : "Success",message : data})
+        })
+        res.status(201).json({status : "Success",message : "Created Successfully"})
         
     } catch (error) {
         res.status(400).json({
@@ -59,127 +64,71 @@ async function GetNewProduct(req,res){
     })
 }
 
-
-async function PostHandleCategory(req,res){
+async function GetSingleProduct(req,res){
+    const {url} = req.params
     try {
-        const {
-          name,
-          parent,
-          isActive,
-          image
+        const foundProduct = await Product.findOne({slug : url }).populate("category","name -_id")
+        .select("-_id title description images category price stock review").lean()
+        if(!foundProduct){
+            return res.status(404).json({
+                status : "Failed",
+                message : "404: page not found"
+            })
         }
-         = req.body
-            const newCategory = await Category.create({
-          name,
-          slug : slugify(name),
-          parent : parent || null,
-          isActive,
-          image
+        if (foundProduct.category) {
+            foundProduct.category = foundProduct.category.name;
+        }
+        res.status(200).json({
+            status : 'success',
+            message : foundProduct
         })
-        res.status(201).json({
-            status : "Success",
-            data : newCategory
-        })   
     } catch (error) {
-        res.status(400).json({
-            status : "Failed",
+        res.status(500).json({
+            status : 'Failed',
             message : error.message
         })
     }
 }
-async function GetHandleCategory(req,res){
-    try {
-         const category_ind =   await Category.find({})
 
-         if(!category_ind){
-            return res.status(404).json({
+async function DeleteSingleProduct(req,res){
+    try {
+        const {url} = req.params
+        const singleProducts = await Product.findOneAndDelete({slug : url})
+        if(!singleProducts){
+           return res.status(404).json({
                 status : "Failed",
-                message : "404: page not found"
+                message : "404 page not found"
             })
-         }
-
-         res.status(200).json({
-            status : "success",
-            data : category_ind
-         })
+        }
+        res.status(200).json({
+            status : 'success',
+            message : "Product Deleted Successfully"
+        })
     } catch (error) {
-        res.status(400).json({
-            status : "Failed",
+        res.status(500).json({
+            status : 'Failed',
             message : error.message
         })
     }
 }
-
-
-async function GetHandleCategoryIndividual(req,res){
+async function PatchSingleProduct(req,res){
     try {
-        const { url } = req.params
-         const category_ind =   await Category.findOne({$and : [{slug : url},{isActive : true}]}).select(["-_id","-slug","-createdAt","-updatedAt"])
-
-         if(!category_ind){
-            return res.status(404).json({
+        const {url} = req.params
+        const updatedData = req.body 
+        const singleProducts = await Product.findOneAndUpdate({slug : url},updatedData,{new: true, runValidators: true })
+        if(!singleProducts){
+           return res.status(404).json({
                 status : "Failed",
-                message : "404: page not found"
+                message : "404 page not found"
             })
-         }
-
-         res.status(200).json({
-            status : "success",
-            data : category_ind
-         })
-    } catch (error) {
-        res.status(400).json({
-            status : "Failed",
-            message : error.message
+        }
+        res.status(200).json({
+            status : 'success',
+            data : singleProducts
         })
-    }
-}
-
-async function PatchtHandleCategoryIndividual(req,res){
-    try {
-        const { url } = req.params
-        const updateData = req.body
-         const category_ind =   await Category.findOneAndUpdate(
-            {slug : url},
-            updateData,{new: true,
-            runValidators: true}
-        )
-         if(!category_ind){
-            return res.status(404).json({
-                status : "Failed",
-                message : "404: page not found"
-            })
-         }
-
-         res.status(200).json({
-            status : "success",
-            data : category_ind
-         })
     } catch (error) {
-        res.status(400).json({
-            status : "Failed",
-            message : error.message
-        })
-    }
-}
-
-async function DeleteHandleCategoryIndividual(req,res){
-    try {
-        const { url } = req.params
-         const category_ind =   await Category.findOneAndDelete({slug : url})
-         if(!category_ind){
-            return res.status(404).json({
-                status : "failed",
-                message : "404: Page not found"
-            })
-         }
-         res.status(200).json({
-            status : "success",
-            message : "Category is Deteled successfully"
-         })
-    } catch (error) {
-        res.status(400).json({
-            status : "Failed",
+        res.status(500).json({
+            status : 'Failed',
             message : error.message
         })
     }
@@ -189,8 +138,7 @@ async function DeleteHandleCategoryIndividual(req,res){
 module.exports = {GetAllProduct,
     PostNewProduct,
     GetNewProduct,
-    GetHandleCategory,
-    PostHandleCategory,
-     GetHandleCategoryIndividual,
-     DeleteHandleCategoryIndividual,
-    PatchtHandleCategoryIndividual}
+    GetSingleProduct,
+    DeleteSingleProduct,
+    PatchSingleProduct
+    }
