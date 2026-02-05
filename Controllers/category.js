@@ -55,7 +55,8 @@ async function GetHandleCategory(req,res){
 async function GetHandleCategoryIndividual(req,res){
     try {
         const { url } = req.params
-         const category_ind =   await Category.findOne({$and : [{slug : url},{isActive : true}]}).select(["-_id","-slug","-createdAt","-updatedAt"])
+         const category_ind =   await Category.findOne({$and : [{slug : url},{isActive : true}]})
+         .select(["-_id","-slug","-createdAt","-updatedAt"])
 
          if(!category_ind){
             return res.status(404).json({

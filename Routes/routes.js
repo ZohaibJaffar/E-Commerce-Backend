@@ -6,8 +6,9 @@ const {handlePostLoginRoutes,
     handleGetLogin,
     handleGetResgistration,
     handleUser,
-    handleAllAuth
-}= require("../Controllers/authentication.js")
+    handleAllAuth,
+    patchHandleUser
+}= require("../Controllers/User.js")
 const {
     GetHandleCategory,
     PostHandleCategory,
@@ -34,27 +35,27 @@ routes.get("/admin/",(req,res)=>{
 })
 
 //login routes
-routes.get("/admin/login",handleGetLogin)
-routes.post('/admin/login',handlePostLoginRoutes)
+routes.get("/login",handleGetLogin)
+routes.post('/login',handlePostLoginRoutes)
 //registration
-routes.get("/admin/signup",authen,RoleBase("Admin"),handleGetResgistration)
-routes.post("/admin/signup",authen,RoleBase("Admin"),handlePostRegistration)
-routes.get("/admin/alluser",authen,RoleBase("Admin"),handleAllAuth)
+routes.get("/signup",handleGetResgistration)
+routes.post("/signup",handlePostRegistration)
+routes.get("/alluser",authen,RoleBase("Admin"),handleAllAuth)
 //Individual admin routes
-routes.get("/admin/alluser/:url",authen,handleUser)
-routes.patch("/admin/alluser/:url",authen,handleUser)
+routes.get("/alluser/:url",authen,handleUser)
+routes.patch("/alluser/:url",authen,RoleBase("Admin","User"),patchHandleUser)
 //++++++++++++++++++++++++++++++++Products Routes +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 routes.get('/products',GetAllProduct)
-routes.post('/products',PostNewProduct)
+routes.post('/products',authen,RoleBase("Admin","Manager"),PostNewProduct)
 routes.get('/products/:url',GetSingleProduct)
-routes.delete('/products/:url',DeleteSingleProduct)
-routes.patch('/products/:url',PatchSingleProduct)
+routes.delete('/products/:url',authen,RoleBase("Admin","Manager"),DeleteSingleProduct)
+routes.patch('/products/:url',authen,RoleBase("Admin","Manager"),PatchSingleProduct)
 //++++++++++++++++++++++++++++++++++++++++++++Category Routes+++++++++++++++++++++++++++++++++++++++++++++++++++
-routes.post("/category",PostHandleCategory)
+routes.post("/category",authen,RoleBase("Admin","Manager"),PostHandleCategory)
 routes.get("/category",GetHandleCategory)
 routes.get("/category/:url", GetHandleCategoryIndividual)
-routes.delete("/category/:url", DeleteHandleCategoryIndividual)
-routes.patch("/category/:url",PatchtHandleCategoryIndividual)
+routes.delete("/category/:url",authen,RoleBase("Admin","Manager"), DeleteHandleCategoryIndividual)
+routes.patch("/category/:url",authen,RoleBase("Admin","Manager"),PatchtHandleCategoryIndividual)
 
 
 

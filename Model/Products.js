@@ -38,6 +38,10 @@ const userSchema = new Schema({
         required : [true,"Stock is required"],
         min : 1
     },
+    isActive :{
+        type : Boolean,
+        default : true
+    },
     review : [
         {
             rating : {

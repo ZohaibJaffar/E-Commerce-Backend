@@ -9,9 +9,16 @@ function authen(req,res,next){
         });
     }
     const token = authHeader.split(' ')[1]
-    if(!token) res.status(401).json({message : "Failed", data :"Unauthorize User"})
+    if(!token){return res.status(401).json({message : "Failed", data :"Unauthorize User"})}
     const payload = getUser(token)
-    if(!payload) res.status(401).json({status: "Failed", message : "Unauthorize User"})
+    if(!payload) {return res.status(401).json({status: "Failed", message : "Unauthorize User"})}
+    console.log(payload)
+    if(payload.isActive === false){
+        return res.status(400).json({
+            status : "Failed",
+            message : "Your account has been suspended"
+        })
+    }
     req.user = payload
     next()
 

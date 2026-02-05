@@ -7,8 +7,7 @@ const userSchema = Schema({
         type : String,
         required : [true,"Name is needed"],
         trim : true,
-
-
+        unique : [true, "This Name has been already exist other name"]
     },
     email :{
         type : String,
@@ -31,9 +30,42 @@ const userSchema = Schema({
         type : String,
         enum : ["Admin","User","Manager"],
         default : "User"
-    }
+    },
+     phone : {
+        type : Number,
+        required : true
+    },
 
-    },{timestamps : true })
+    age : {
+        type : Number,
+        required : true
+    },
+
+    city:{
+        type : String,
+        required : true
+    },
+
+      isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    address : {
+        type : String,
+        required : true 
+    },
+    
+    totalOrders: {
+      type: Number,
+      default: 0,
+    },
+
+    totalSpent: {
+      type: Number,
+      default: 0,
+    },
+},{timestamps : true })
 userSchema.pre("save",async function (next){
         const user = this
         if(!user.isModified("password")) return null;
@@ -62,8 +94,8 @@ userSchema.static('matchPasswordAndGenerateToken',async function(email,password)
 })
 
 
-const authUser = model("authUser",userSchema)
+const User = model("User",userSchema)
 
-module.exports = authUser
+module.exports = User
 
 

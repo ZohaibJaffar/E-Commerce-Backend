@@ -4,7 +4,9 @@ private_key = process.env.PRIVATE_KEY
 function setUser(data){
     const payload = {
         userName : data.userName,
-        role : data.role
+        role : data.role,
+        slug : data.slug,
+        isActive : data.isActive
     }
     const token = jwt.sign(payload,private_key,{expiresIn : "1h"})
     return token
