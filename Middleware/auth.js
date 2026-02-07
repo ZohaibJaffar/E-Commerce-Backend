@@ -12,7 +12,6 @@ function authen(req,res,next){
     if(!token){return res.status(401).json({message : "Failed", data :"Unauthorize User"})}
     const payload = getUser(token)
     if(!payload) {return res.status(401).json({status: "Failed", message : "Unauthorize User"})}
-    console.log(payload)
     if(payload.isActive === false){
         return res.status(400).json({
             status : "Failed",

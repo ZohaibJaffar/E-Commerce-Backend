@@ -22,6 +22,12 @@ const  {GetAllProduct,
     DeleteSingleProduct,
     PatchSingleProduct
 } = require("../Controllers/Products.js")
+const {
+    PostOrder,
+    GetAllOrder,
+    GetSingleOrder,
+    PatchOrder
+} = require('../Controllers/order.js')
 const authen = require("../Middleware/auth.js")
 const RoleBase = require("../Middleware/role.js")
 
@@ -42,8 +48,8 @@ routes.get("/signup",handleGetResgistration)
 routes.post("/signup",handlePostRegistration)
 routes.get("/alluser",authen,RoleBase("Admin"),handleAllAuth)
 //Individual admin routes
-routes.get("/alluser/:url",authen,handleUser)
-routes.patch("/alluser/:url",authen,RoleBase("Admin","User"),patchHandleUser)
+routes.get("/user/:url",authen,handleUser)
+routes.patch("/user/:url",authen,RoleBase("Admin","Manager","User"),patchHandleUser)
 //++++++++++++++++++++++++++++++++Products Routes +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 routes.get('/products',GetAllProduct)
 routes.post('/products',authen,RoleBase("Admin","Manager"),PostNewProduct)
@@ -56,8 +62,11 @@ routes.get("/category",GetHandleCategory)
 routes.get("/category/:url", GetHandleCategoryIndividual)
 routes.delete("/category/:url",authen,RoleBase("Admin","Manager"), DeleteHandleCategoryIndividual)
 routes.patch("/category/:url",authen,RoleBase("Admin","Manager"),PatchtHandleCategoryIndividual)
-
-
+//++++++++++++++++++++++++++++++++++++++++++++++++++Orders and Payments routes+++++++++++++++++++++++++++++++++++++++++++
+routes.post('/products/:url/order',authen,PostOrder)
+routes.get('/orders',authen,RoleBase('Admin',"Manager","User"),GetAllOrder)
+routes.get('/orders/:url',authen,RoleBase('Admin','Manager'),GetSingleOrder)
+routes.patch('/order/:url',authen,RoleBase('Admin','Manager'),PatchOrder)
 
 
 
