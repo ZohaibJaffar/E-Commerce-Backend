@@ -124,7 +124,6 @@ async function GetSingleOrder(req,res){
 }
 
 async function PatchOrder(res,res){
-    async function UpdateOrder(req, res) {
     try {
         const { url } = req.params; // Make sure this is the actual ID string
         const data = req.body;
@@ -163,7 +162,7 @@ async function PatchOrder(res,res){
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
-}
+
 
 }
 module.exports = {

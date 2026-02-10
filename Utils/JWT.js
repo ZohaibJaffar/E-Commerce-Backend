@@ -18,8 +18,7 @@ function getUser(token) {
         
         
     } catch (error) {
-       console.log(`There is error while verifying the token ${error}`)
-       return null
+        return null 
     }
     
 } 
