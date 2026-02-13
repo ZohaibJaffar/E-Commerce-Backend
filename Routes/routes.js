@@ -1,6 +1,6 @@
 const express = require('express')
-
 const routes = express.Router()
+const AsyncHandler = require('../Utils/asyncHandler.js')
 const {handlePostLoginRoutes,
     handlePostRegistration,
     handleGetLogin,
@@ -64,7 +64,7 @@ routes.delete("/category/:url",authen,RoleBase("Admin","Manager"), DeleteHandleC
 routes.patch("/category/:url",authen,RoleBase("Admin","Manager"),PatchtHandleCategoryIndividual)
 //++++++++++++++++++++++++++++++++++++++++++++++++++Orders and Payments routes+++++++++++++++++++++++++++++++++++++++++++
 routes.post('/products/:url/order',authen,PostOrder)
-routes.get('/orders',authen,RoleBase('Admin',"Manager","User"),GetAllOrder)
+routes.get('/orders',authen,RoleBase('Admin',"Manager"),GetAllOrder)
 routes.get('/orders/:url',authen,RoleBase('Admin','Manager'),GetSingleOrder)
 routes.patch('/order/:url',authen,RoleBase('Admin','Manager'),PatchOrder)
 

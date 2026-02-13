@@ -17,9 +17,8 @@ async function PostOrder(req,res){
            country,
     
         } = req.body
-        const user = await User.findOne({slug : slug}).select('_id')
+        const user = await User.findOne({slug : slug}).select('_id totalOrders totalSpent')
         const product = await Product.findOne({slug : url}).select('_id price')
-        console.log(product)
     
         const newOrder = await Order.create({
             user : user,
@@ -46,12 +45,27 @@ async function PostOrder(req,res){
     
             newOrder.paymentDetail = payment._id;
             await newOrder.save();
-    
+            // 5. UPDATE USER STATS (Atomic Update)
+        // This increments totalOrders by 1 and totalSpent by the product price
+        await User.findByIdAndUpdate(user._id, {
+            $inc: { 
+                totalOrders: 1, 
+                totalSpent: product.price 
+            }
+        });
             res.status(201).json({
-                success: true,
-                order: newOrder,
-                payment
-            });
+            status : "success",
+            order: {
+            id: newOrder._id,
+            status: newOrder.status, // assuming your schema has this
+            total: product.price
+            },
+            payment: {
+            method: payment.method,
+            status: payment.status,
+            currency: payment.currency
+            }
+});
         
     } catch (error) {
     res.status(500).json({ message: error.message });
@@ -61,7 +75,7 @@ async function PostOrder(req,res){
 }
 async function GetAllOrder(req,res){
     try {
-        const allProducts = await Order.find({}).select('-_id shippingAddress item user orderStatus paymentDetail')
+        const allProducts = await Order.find({}).select('_id shippingAddress item user orderStatus paymentDetail')
         .populate('user','userName -_id')
         .populate('paymentDetail','-_id amount currency method status')
         .populate('item','title -_id').lean()
@@ -86,36 +100,53 @@ async function GetAllOrder(req,res){
         })
     }
 }
-async function GetSingleOrder(req,res){
+async function GetSingleOrder(req, res) {
     try {
-        const id = req.params.url; // Make sure your route is /order/:id
+        const orderId = req.params.url;
+        const requesterId = req.user._id; // ID of the person logged in
+        const requesterRole = req.user.role; // e.g., "Admin", "Manager", "User"
 
-        // 1. Use findById and populate the references
-        const data = await Order.findById(id).select('-_id shippingAddress item user orderStatus paymentDetail')
-            .populate('user', 'userName -_id')
+        // 1. Fetch the order first to see who owns it
+        const order = await Order.findById(orderId)
+            .populate('user', 'userName _id') // We need _id to compare ownership
             .populate('item', 'title -_id')
             .populate('paymentDetail', '-_id amount method status')
-            .lean(); // .lean() is required to modify the object later
+            .lean();
 
-        // 2. Handle if the order doesn't exist
-        if (!data) {
+        if (!order) {
             return res.status(404).json({
                 status: "fail",
                 message: "No order found with that ID"
             });
         }
 
-        // 3. Flatten the fields (just like you did in GetAllOrders)
-        if (data.user) data.user = data.user.userName;
-        if (data.item) data.item = data.item.map(i => i.title);
+        // 2. PERMISSION CHECK
+        // Allow if user is Admin OR Manager
+        const isStaff = requesterRole === "Admin" || requesterRole === "Manager";
+        
+        // Allow if the Order's user ID matches the Requester's ID
+        const isOwner = order?.user && order?.user?._id.toString() === requesterId?.toString();
+
+        if (!isStaff && !isOwner) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You do not have permission to view this order"
+            });
+        }
+
+        // 3. Flatten/Clean data for response
+        if (order.user) order.user = order.user.userName;
+        if (order.item) {
+            // Check if item is an array or single object based on your schema
+            order.item = Array.isArray(order.item) ? order.item.map(i => i.title) : order.item.title;
+        }
 
         res.status(200).json({
             status: "success",
-            data: data
+            data: order
         });
 
     } catch (error) {
-        // This catches invalid ObjectIDs or server errors
         res.status(500).json({
             status: "error",
             message: error.message

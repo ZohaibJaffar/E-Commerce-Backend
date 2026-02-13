@@ -3,6 +3,7 @@ private_key = process.env.PRIVATE_KEY
 
 function setUser(data){
     const payload = {
+        _id : data._id,
         userName : data.userName,
         role : data.role,
         slug : data.slug,
