@@ -28,6 +28,9 @@ const {
     GetSingleOrder,
     PatchOrder
 } = require('../Controllers/order.js')
+const { AddToCart,
+    GetUserCart
+ } = require('../Controllers/addtocart.js')
 const authen = require("../Middleware/auth.js")
 const RoleBase = require("../Middleware/role.js")
 
@@ -63,11 +66,13 @@ routes.get("/category/:url", GetHandleCategoryIndividual)
 routes.delete("/category/:url",authen,RoleBase("Admin","Manager"), DeleteHandleCategoryIndividual)
 routes.patch("/category/:url",authen,RoleBase("Admin","Manager"),PatchtHandleCategoryIndividual)
 //++++++++++++++++++++++++++++++++++++++++++++++++++Orders and Payments routes+++++++++++++++++++++++++++++++++++++++++++
-routes.post('/products/:url/order',authen,PostOrder)
+routes.post('/products/:url/orders',authen,PostOrder)
 routes.get('/orders',authen,RoleBase('Admin',"Manager"),GetAllOrder)
 routes.get('/orders/:url',authen,RoleBase('Admin','Manager'),GetSingleOrder)
-routes.patch('/order/:url',authen,RoleBase('Admin','Manager'),PatchOrder)
-
+routes.patch('/orders/:url',authen,RoleBase('Admin','Manager'),PatchOrder)
+ //++++++++++++++++++++++++++++++++++++++++=Add to Cart +++++++++++++++++++++++++++++++++++++
+routes.get('/addtocart',authen,GetUserCart);
+routes.post('/addtocart',authen,AddToCart)
 
 
 module.exports = routes
