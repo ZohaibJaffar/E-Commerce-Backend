@@ -1,6 +1,7 @@
 const Category = require('../Model/category.js');
 const slugify = require("slugify")
 const Product = require("../Model/Products.js")
+const sendEmail = require('../Utils/nodemailer.js');
 async function GetAllProduct(req,res){
     try {
         const allProducts = await Product.find({}).populate("category","name -_id")
@@ -46,7 +47,14 @@ async function PostNewProduct(req,res){
                 price,
                 stock,
                 review
-        })
+        });
+        await sendEmail({
+                        email: "xohaibshiekh@gmail.com",
+                        subject: 'Added new product',
+                        message: 'add new product ',
+                        html: `<h1>Add new product</h1><br><p>${req.user.email} has added new product in store</p>`
+                    });
+
         res.status(201).json({status : "Success",message : "Created Successfully"})
         
     } catch (error) {
@@ -100,10 +108,25 @@ async function DeleteSingleProduct(req,res){
                 message : "404 page not found"
             })
         }
+        try{
+        await sendEmail({
+            email: "xohaibshiekh@gmail.com",
+            subject: 'Delete the product',
+            message: 'Delete the product',
+            html: `<h1>Delete the product</h1><p>${req.user.email} has delete ${req.params.url} product</p>`
+        });
+    }
+        catch(err){
+            res.status(500).json({
+                status : 'failed',
+                message : 'There is error while sending email'
+            })
+        }
         res.status(200).json({
             status : 'success',
             message : "Product Deleted Successfully"
         })
+
     } catch (error) {
         res.status(500).json({
             status : 'Failed',
@@ -115,13 +138,19 @@ async function PatchSingleProduct(req,res){
     try {
         const {url} = req.params
         const updatedData = req.body 
-        const singleProducts = await Product.findOneAndUpdate({slug : url},updatedData,{new: true, runValidators: true })
+        const singleProducts = await Product.findOneAndUpdate({slug : url},updatedData,{new: true, runValidators: true }).select('-_id title description images category stock price review isActive ')
         if(!singleProducts){
            return res.status(404).json({
                 status : "Failed",
                 message : "404 page not found"
             })
         }
+        await sendEmail({
+                        email: 'xohaibshiekh@gmail.com',
+                        subject:'Update the product',
+                        message: 'Update the product',
+                        html: `<h1>Update the product</h1><p>${req.user.email} has Update the of ${req.params.url} </p>`
+                    });
         res.status(200).json({
             status : 'success',
             data : singleProducts

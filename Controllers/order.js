@@ -2,9 +2,10 @@ const Order = require("../Model/Order.js")
 const Payment = require("../Model/Payment.js")
 const User = require('../Model/user.js')
 const Product = require("../Model/Products.js")
+const sendEmail = require('../Utils/nodemailer.js');
 async function PostOrder(req,res){
     try {
-        const {slug} = req.user
+        const {slug,email} = req.user
         const {url} = req.params
         const {
            fullName,
@@ -53,6 +54,19 @@ async function PostOrder(req,res){
                 totalSpent: product.price 
             }
         });
+            await sendEmail({
+                email: email,
+                subject: 'Order Confirmed!',
+                message: 'Thank you for your purchase. Your order is being processed.',
+                html: `<h1>Order Confirmation</h1><p>Your order is being processed and our team is contact you very soon</p>`
+            });
+            await sendEmail({
+                email: "xohaibshiekh@gmail.com",
+                subject : 'got new order',
+                message : "congratulations. You have got order",
+                html : `<h1>Congratulations</h1><br><p>You have got new order</p>`
+
+            })
             res.status(201).json({
             status : "success",
             order: {
@@ -154,10 +168,12 @@ async function GetSingleOrder(req, res) {
     }
 }
 
-async function PatchOrder(res,res){
+async function PatchOrder(req,res){
     try {
         const { url } = req.params; // Make sure this is the actual ID string
         const data = req.body;
+        const userEmail = req.user.email;
+        console.log()
 
         const updatedOrder = await Order.findOneAndUpdate(
             { _id: url }, 
@@ -182,6 +198,16 @@ async function PatchOrder(res,res){
         // Fix 2: Clean Flattening of Items (No forEach needed!)
         if (updatedOrder.item && Array.isArray(updatedOrder.item)) {
             updatedOrder.item = updatedOrder.item.map(i => i.title);
+        }
+         try {
+            await sendEmail({
+                email: "xohaibshiekh@gmail.com",
+                subject: 'Order Updated succussfully',
+                message: `${userEmail} has updated the product`,
+                html: `<h1>Order Confirmation</h1><p>${userEmail} was updated the order successful!</p>`
+            });
+        } catch (err) {
+            console.log("Email failed to send, but order was placed.")
         }
 
         res.status(200).json({

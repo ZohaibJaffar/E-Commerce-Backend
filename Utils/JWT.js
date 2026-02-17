@@ -5,6 +5,7 @@ function setUser(data){
     const payload = {
         _id : data._id,
         userName : data.userName,
+        email : data.email,
         role : data.role,
         slug : data.slug,
         isActive : data.isActive
