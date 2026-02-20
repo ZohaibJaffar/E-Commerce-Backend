@@ -2,16 +2,28 @@ require("dotenv").config({paht : "./.env"})
 const express = require('express')
 const routes = require("./Routes/routes.js")
 const DBconnection = require("./Config/DBconnection.js")
+const rateLimit = require("express-rate-limit")
+const cookieParser = require("cookie-parser")
+
 const  CustomeError = require("./Utils/CustomeError.js")
 const GlobalErrorHandler = require('./Middleware/globalErrorHandler.js')
 
 const app = express()
 
 DBconnection(process.env.MONGO_URL)
-
 const PORT = process.env.PORT || 3000
 
-app.use(express.json())
+
+const limiter = rateLimit({
+    windowMs : 60 * 60 * 1000,
+    max : 1000,
+    message : "Too many request from this IP, please try again after 15 minutes"
+})
+
+app.use('/api', limiter)
+
+app.use(express.json({limit : "5mb"}))
+app.use(cookieParser())
 
 app.use("/api/v1/",routes)
 app.use((req, res,next) => {

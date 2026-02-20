@@ -149,7 +149,7 @@ async function PatchSingleProduct(req,res){
                         email: 'xohaibshiekh@gmail.com',
                         subject:'Update the product',
                         message: 'Update the product',
-                        html: `<h1>Update the product</h1><p>${req.user.email} has Update the of ${req.params.url} </p>`
+                        html: `<h1>Update the product</h1><p>${req.user.email} has Update the of <b>${req.params.url}</b> </p>`
                     });
         res.status(200).json({
             status : 'success',

@@ -15,6 +15,7 @@ function setUser(data){
 }
 function getUser(token) {
     try {
+        console.log(token)
         const payload = jwt.verify(token,private_key)
         return payload
         

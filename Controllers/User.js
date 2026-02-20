@@ -5,6 +5,12 @@ async function handlePostLoginRoutes(req,res) {
     try {
         const {email, password} = req.body
         const token = await User.matchPasswordAndGenerateToken(email,password)
+        res.cookie('jwt',token,{
+            maxAge : process.env.EXPIRE_LOG,
+            // secure : true,
+            httpOnly : true
+    
+        })
         res.status(200).json(
             {status : 'Success',
                 data : { token : token}

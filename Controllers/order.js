@@ -173,8 +173,6 @@ async function PatchOrder(req,res){
         const { url } = req.params; // Make sure this is the actual ID string
         const data = req.body;
         const userEmail = req.user.email;
-        console.log()
-
         const updatedOrder = await Order.findOneAndUpdate(
             { _id: url }, 
             data, 
